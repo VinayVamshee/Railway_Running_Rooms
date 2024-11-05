@@ -1,0 +1,107 @@
+.Home {
+    padding: 10px;
+    background-color: rgb(206, 230, 255);
+    height: 110vh;
+}
+
+.navbar {
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.Buildings {
+    display: flex;
+    gap: 5px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.EditOption {
+    display: flex;
+    gap: 10px;
+}
+
+.building-boxes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.building-box {
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
+}
+
+.building-info {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(211, 211, 211, 0.525);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.building-info p {
+    text-align: justify;
+    border-radius: 10px;
+}
+
+.building-info p strong {
+    color: green;
+}
+
+.room-boxes {
+    background-color: rgba(255, 255, 218, 0.627);
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.room-box {
+    border-radius: 10px;
+    height: 70px;
+    width: 70px;
+    text-align: center;
+    padding: 5px;
+    transition: ease-in-out 0.2s;
+}
+
+.room-boxes button:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+.room-box.occupied {
+    background-color: rgb(255, 97, 97);
+}
+
+.room-box.free {
+    background-color: rgb(255, 255, 255);
+}
+
+.peaktime th {
+    text-align: center;
+}
+
+.peaktime td {
+    text-align: center;
+    border: 0.5px solid black;
+}
+
+.roomname {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(127, 127, 127, 0.428);
+    padding: 5px;
+    border-radius: 10px;
+}
