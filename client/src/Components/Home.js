@@ -18,7 +18,7 @@ export default function Home() {
 
     const fetchBuildings = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:3001/buildings', {
+            const response = await axios.get('https://railway-running-rooms-server.vercel.app/buildings', {
                 headers: { Authorization: token }
             });
             setFetchedBuildings(response.data);
@@ -68,7 +68,7 @@ export default function Home() {
                 );
 
                 if (userConfirmed) {
-                    const response = await axios.put(`http://localhost:3001/buildings/${currentBuildingId}`, {
+                    const response = await axios.put(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}`, {
                         name: building.name,
                         rooms: roomsData,
                     }, {
@@ -80,7 +80,7 @@ export default function Home() {
                 }
             } else {
                 // eslint-disable-next-line
-                const response = await axios.post('http://localhost:3001/buildings', {
+                const response = await axios.post('https://railway-running-rooms-server.vercel.app/buildings', {
                     name: building.name,
                     rooms: roomsData,
                 }, {
@@ -114,7 +114,7 @@ export default function Home() {
     const handleDelete = async (buildingId) => {
         if (window.confirm('Are you sure you want to delete this building?')) {
             try {
-                await axios.delete(`http://localhost:3001/buildings/${buildingId}`, {
+                await axios.delete(`https://railway-running-rooms-server.vercel.app/buildings/${buildingId}`, {
                     headers: { Authorization: token }
                 });
                 alert('Building deleted successfully!');
@@ -160,7 +160,7 @@ export default function Home() {
         }
 
         try {
-            await axios.post(`http://localhost:3001/buildings/${currentBuildingId}/rooms/${selectedRoom}/checkin`, {
+            await axios.post(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}/rooms/${selectedRoom}/checkin`, {
                 day: arrivalDetails.day,
                 inTime: arrivalDetails.time,
             }, { headers: { Authorization: token } });
@@ -184,7 +184,7 @@ export default function Home() {
 
         try {
             await axios.post(
-                `http://localhost:3001/buildings/${currentBuildingId}/rooms/${selectedRoom}/checkout`,
+                `https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}/rooms/${selectedRoom}/checkout`,
                 {
                     day: departureDetails.day,
                     outTime: departureDetails.time,
@@ -229,7 +229,7 @@ export default function Home() {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:3001/login', loginData);
+            const response = await axios.post('https://railway-running-rooms-server.vercel.app/login', loginData);
             alert('Login successful!');
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('username', response.data.user.username);
@@ -242,7 +242,7 @@ export default function Home() {
     const handleRegister = async () => {
         try {
             // eslint-disable-next-line
-            const response = await axios.post('http://localhost:3001/register', registerData);
+            const response = await axios.post('https://railway-running-rooms-server.vercel.app/register', registerData);
             alert('Registration successful!');
             window.location.reload();
         } catch (error) {
@@ -416,7 +416,7 @@ export default function Home() {
     const handleAdminRegister = async (e) => {
         e.preventDefault();
         try {// eslint-disable-next-line
-            const response = await axios.post('http://localhost:3001/admin/register', admin);
+            const response = await axios.post('https://railway-running-rooms-server.vercel.app/admin/register', admin);
             setAdmin({ username: '', password: '' });
         } catch (error) {
         }
@@ -425,7 +425,7 @@ export default function Home() {
     const handleAdminLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/admin/login', admin);
+            const response = await axios.post('https://railway-running-rooms-server.vercel.app/admin/login', admin);
             if (response.data.adminToken) {
                 localStorage.setItem('AdminToken', response.data.adminToken);
                 setIsAdminLoggedIn(true);
@@ -449,7 +449,7 @@ export default function Home() {
             const adminToken = localStorage.getItem('AdminToken');
 
             try {
-                const response = await axios.get('http://localhost:3001/getallusers', {
+                const response = await axios.get('https://railway-running-rooms-server.vercel.app/getallusers', {
                     headers: { 'admintoken': adminToken }
                 });
                 setUsers(response.data);
