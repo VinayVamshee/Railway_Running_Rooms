@@ -456,7 +456,7 @@ export default function Home() {
 
     return (
         <div className='Home'>
-            <h3>{username}</h3>
+            <h3>CREW & TRAIN MANAGER COMBINED RUNNING ROOM <strong>{username}</strong> SECR</h3>
             <div className='navbar'>
 
                 {
@@ -922,11 +922,10 @@ export default function Home() {
             {
                 isLoggedIn ?
                     <>
-                        <h2 className='mt-3'>Buildings:</h2>
-                        <div className="building-boxes">
+                        <div className="building-boxes mt-2">
                             {fetchedBuildings && fetchedBuildings.map((building, index) => (
                                 <div key={index} className="building-box">
-                                    <h4>{building.name} Wing</h4>
+                                    <h4>{building.name} - WING</h4>
                                     <div className="room-boxes">
                                         {building.rooms.map((room) => {
                                             const arrivalLogs = room.logs.filter(log => log.inTime);
