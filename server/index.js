@@ -99,7 +99,7 @@ app.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid username or password' });
         }
 
-        const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET);
         res.status(200).json({ token, user: { id: user._id, username: user.username } });
     } catch (error) {
         console.error('Error logging in user:', error);
