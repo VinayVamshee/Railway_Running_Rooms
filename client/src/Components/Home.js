@@ -68,6 +68,7 @@ export default function Home() {
                 );
 
                 if (userConfirmed) {
+                    // eslint-disable-next-line
                     const response = await axios.put(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}`, {
                         name: building.name,
                         rooms: roomsData,
@@ -76,7 +77,6 @@ export default function Home() {
                             Authorization: token,
                         },
                     });
-                    console.log("Building updated successfully:", response.data);
                 }
             } else {
                 // eslint-disable-next-line
@@ -313,7 +313,6 @@ export default function Home() {
             const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
             saveAs(file, fileName);
         } catch (error) {
-            console.error('Error downloading user data:', error);
             alert('Error downloading user data: ' + error.message);
         }
     };
@@ -378,11 +377,8 @@ export default function Home() {
         const past30DaysString = past30Days.toISOString().split('T')[0];
 
         fetchedBuildings.forEach(building => {
-            console.log(`Checking building: ${building.name}`);
             building.rooms.forEach(room => {
-                console.log(`  Checking room: ${room.roomNumber}`);
                 room.logs.forEach(log => {
-                    console.log(`    Checking log for day: ${log.day}`);
                     if (log.day >= past30DaysString && log.day <= todayString) {
                         data.push({
                             buildingName: building.name,
@@ -396,9 +392,7 @@ export default function Home() {
                 });
             });
         });
-
         setArrivalDepartureData(data);
-        console.log("Collected Arrival and Departure Data: ", data);
     };
 
     const handleShowModal = () => {
@@ -455,10 +449,8 @@ export default function Home() {
                 });
                 setUsers(response.data);
             } catch (error) {
-                console.error('Error fetching users:', error);
             }
         };
-
         fetchUsers();
     }, []);
 
@@ -516,7 +508,7 @@ export default function Home() {
                                 <div className="modal-body">
 
                                     <div className="mb-3">
-                                        <label htmlFor="loginUsername" className="form-label">Username</label>
+                                        <label className="form-label">Username</label>
                                         <input
                                             type="text"
                                             className="form-control"
@@ -528,7 +520,7 @@ export default function Home() {
                                         />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="loginPassword" className="form-label">Password</label>
+                                        <label className="form-label">Password</label>
                                         <input
                                             type="password"
                                             className="form-control"
@@ -574,7 +566,7 @@ export default function Home() {
                                         />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="registerPassword" className="form-label">Password</label>
+                                        <label className="form-label">Password</label>
                                         <input
                                             type="password"
                                             className="form-control"
@@ -595,7 +587,7 @@ export default function Home() {
                 </div>
 
                 {/* Modal for Arrival & Departure */}
-                <div className="modal fade" id="Date&TimeModal" tabindex="-1" aria-labelledby="Date&TimeModalLabel" aria-hidden="true">
+                <div className="modal fade" id="Date&TimeModal" tabIndex="-1" aria-labelledby="Date&TimeModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-xl">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -723,11 +715,11 @@ export default function Home() {
                                         <>
                                             <form onSubmit={handleAdminLogin}>
                                                 <div className="mb-3">
-                                                    <label htmlFor="loginUsername" className="form-label">Username</label>
+                                                    <label className="form-label">Username</label>
                                                     <input
                                                         type="text"
                                                         className="form-control"
-                                                        id="loginUsername"
+                                                        id="loginAdminUsername"
                                                         name="username"
                                                         value={admin.username}
                                                         onChange={handleChange}
@@ -735,11 +727,11 @@ export default function Home() {
                                                     />
                                                 </div>
                                                 <div className="mb-3">
-                                                    <label htmlFor="loginPassword" className="form-label">Password</label>
+                                                    <label className="form-label">Password</label>
                                                     <input
                                                         type="password"
                                                         className="form-control"
-                                                        id="loginPassword"
+                                                        id="loginAdminPassword"
                                                         name="password"
                                                         value={admin.password}
                                                         onChange={handleChange}
@@ -781,7 +773,7 @@ export default function Home() {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            id="registerUsername"
+                                            id="registerAdminUsername"
                                             name="username"
                                             value={admin.username}
                                             onChange={handleChange}
@@ -789,11 +781,11 @@ export default function Home() {
                                         />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="registerPassword" className="form-label">Password</label>
+                                        <label className="form-label">Password</label>
                                         <input
                                             type="password"
                                             className="form-control"
-                                            id="registerPassword"
+                                            id="registerAdminPassword"
                                             name="password"
                                             value={admin.password}
                                             onChange={handleChange}
