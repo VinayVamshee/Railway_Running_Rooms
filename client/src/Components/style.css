@@ -14,29 +14,14 @@
     padding: 5px;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 
 .Buildings {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
-}
-
-.modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.EditOption {
-    display: flex;
-    gap: 10px;
-}
-
-.building-box {
-    display: flex;
-    flex-direction: column;
-    text-align: justify;
+    justify-content: flex-start;
 }
 
 .building-info {
@@ -45,6 +30,24 @@
     background-color: rgba(211, 211, 211, 0.525);
     padding: 5px;
     border-radius: 10px;
+    width: fit-content;
+}
+
+.EditOption {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.building-box {
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
 }
 
 .building-info p {
@@ -114,4 +117,16 @@
 
 .Home h3 {
     text-align: center;
+}
+
+@media (max-width: 790px) {
+    * {
+        font-size: medium;
+    }
+}
+
+@media (max-width: 690px) {
+    .Buildings {
+        width: fit-content;
+    }
 }
