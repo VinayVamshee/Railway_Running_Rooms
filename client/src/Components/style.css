@@ -1,7 +1,11 @@
+* {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: large;
+}
+
 .Home {
     padding: 10px;
-    background-color: rgb(206, 230, 255);
-    height: 110vh;
+    height: fit-content;
 }
 
 .navbar {
@@ -29,12 +33,6 @@
     gap: 10px;
 }
 
-.building-boxes {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .building-box {
     display: flex;
     flex-direction: column;
@@ -58,8 +56,16 @@
     color: green;
 }
 
+.building-boxes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: rgba(124, 124, 124, 0.518);
+    border-radius: 10px;
+    padding: 10px;
+}
+
 .room-boxes {
-    background-color: rgba(255, 255, 218, 0.627);
     padding: 10px;
     border-radius: 10px;
     display: flex;
@@ -78,15 +84,15 @@
 
 .room-boxes button:hover {
     transform: scale(1.1);
-    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.678));
 }
 
 .room-box.occupied {
-    background-color: rgb(255, 97, 97);
+    background-color: #FF033E;
 }
 
 .room-box.free {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(142, 255, 82);
 }
 
 .peaktime th {
@@ -104,4 +110,8 @@
     background-color: rgba(127, 127, 127, 0.428);
     padding: 5px;
     border-radius: 10px;
+}
+
+.Home h3 {
+    text-align: center;
 }
