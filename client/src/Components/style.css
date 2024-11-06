@@ -1,11 +1,27 @@
 * {
     font-family: 'Times New Roman', Times, serif;
     font-size: large;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .Home {
     padding: 10px;
     height: fit-content;
+    background-image: url('https://c4.wallpaperflare.com/wallpaper/920/361/189/blurred-blue-gradient-wallpaper-preview.jpg');
+}
+
+.Home h3 {
+    text-align: center;
+    padding: 5px;
+    border-bottom: 1px solid black;
+}
+
+.Home h3 strong {
+    font-size: larger;
+    font-style: italic;
+    color: whitesmoke;
 }
 
 .navbar {
@@ -14,7 +30,7 @@
     padding: 5px;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: flex-end;
 }
 
 .Buildings {
@@ -27,7 +43,8 @@
 .building-info {
     display: flex;
     flex-direction: column;
-    background-color: rgba(211, 211, 211, 0.525);
+    background-color: lightcyan;
+    border: 1px solid black;
     padding: 5px;
     border-radius: 10px;
     width: fit-content;
@@ -57,19 +74,23 @@
 
 .building-info p strong {
     color: green;
+    font-size: 17px;
 }
 
 .building-boxes {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background-color: rgba(124, 124, 124, 0.518);
+    background-color: rgba(164, 164, 164, 0.331);
+    color: white;
+    border: 0.5px solid black;
     border-radius: 10px;
     padding: 10px;
 }
 
 .room-boxes {
     padding: 10px;
+    background-color: whitesmoke;
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
@@ -77,6 +98,7 @@
 }
 
 .room-box {
+    font-weight: bold;
     border-radius: 10px;
     height: 70px;
     width: 70px;
@@ -91,12 +113,31 @@
 }
 
 .room-box.occupied {
-    background-color: #FF033E;
+    background: linear-gradient(135deg, #ff0000, #ff4662, #ff7e7e);
+    background-size: 200% 200%;
+    animation: shine 1.5s infinite;
 }
 
 .room-box.free {
-    background-color: rgb(142, 255, 82);
+    background: linear-gradient(135deg, #00e800, #97ff97);
+    background-size: 200%;
+    animation: shine 1.5s infinite;
 }
+
+@keyframes shine {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 
 .peaktime th {
     text-align: center;
@@ -113,10 +154,6 @@
     background-color: rgba(127, 127, 127, 0.428);
     padding: 5px;
     border-radius: 10px;
-}
-
-.Home h3 {
-    text-align: center;
 }
 
 @media (max-width: 790px) {
