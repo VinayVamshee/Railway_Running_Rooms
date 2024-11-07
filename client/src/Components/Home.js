@@ -10,7 +10,7 @@ export default function Home() {
     const [editMode, setEditMode] = useState(false);
     const [currentBuildingId, setCurrentBuildingId] = useState(null);
     const [selectedRoom, setSelectedRoom] = useState(null);
-    const [arrivalDetails, setArrivalDetails] = useState({ day: '', time: '' });
+    const [arrivalDetails, setArrivalDetails] = useState({ name: '', day: '', time: '' });
     const [departureDetails, setDepartureDetails] = useState({ day: '', time: '' });
     const [roomNames, setRoomNames] = useState([]);
 
@@ -132,7 +132,7 @@ export default function Home() {
         const departureLogs = room.logs.filter(log => log.outTime);
 
         if (arrivalLogs.length === departureLogs.length) {
-            setArrivalDetails({ day: '', time: '' });
+            setArrivalDetails({ name: '', day: '', time: '' });
             const arrivalModal = new window.bootstrap.Modal(document.getElementById('arrivalModal'));
             arrivalModal.show();
         } else if (arrivalLogs.length > departureLogs.length) {
@@ -161,12 +161,13 @@ export default function Home() {
 
         try {
             await axios.post(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}/rooms/${selectedRoom}/checkin`, {
+                name: arrivalDetails.name,
                 day: arrivalDetails.day,
                 inTime: arrivalDetails.time,
             }, { headers: { Authorization: token } });
 
             alert('Arrival time logged successfully!');
-            setArrivalDetails({ day: '', time: '' });
+            setArrivalDetails({ name: '', day: '', time: '' });
             const arrivalModal = window.bootstrap.Modal.getInstance(document.getElementById('arrivalModal'));
             arrivalModal.hide();
             window.location.reload();
@@ -283,6 +284,7 @@ export default function Home() {
                         return room.logs.map(log => ({
                             BuildingName: building.name,
                             RoomNumber: room.roomNumber,
+                            Name: log.name,
                             Day: log.day,
                             InTime: log.inTime,
                             OutTime: log.outTime || 'No OutTime',
@@ -292,6 +294,7 @@ export default function Home() {
                         return [{
                             BuildingName: building.name,
                             RoomNumber: room.roomNumber,
+                            Name: 'No Name',
                             Day: 'No Logs',
                             InTime: 'No Logs',
                             OutTime: 'No Logs',
@@ -363,6 +366,12 @@ export default function Home() {
             .filter(entry => entry.includes('Occupied Rooms:'));
 
         setPeakHours(peakHoursResult);
+    };
+
+    const formatDate = (dateString) => {
+        if (typeof dateString !== 'string' || !dateString.includes("-")) return dateString;
+        const [year, month, day] = dateString.split("-");
+        return `${day}-${month}-${year.slice(2)}`;
     };
 
     const [arrivalDepartureData, setArrivalDepartureData] = useState([]);
@@ -607,7 +616,7 @@ export default function Home() {
                                     <thead>
                                         <tr>
                                             <th>Building Name</th>
-                                            <th>Room Number</th>
+                                            <th>Room No</th>
                                             <th>Day</th>
                                             <th>Arrival Time</th>
                                             <th>Out Day</th>
@@ -619,9 +628,9 @@ export default function Home() {
                                             <tr key={index}>
                                                 <td>{entry.buildingName}</td>
                                                 <td>{entry.roomNumber}</td>
-                                                <td>{entry.day}</td>
+                                                <td>{formatDate(entry.day)}</td>
                                                 <td>{entry.inTime}</td>
-                                                <td>{entry.outDay}</td>
+                                                <td>{formatDate(entry.outDay)}</td>
                                                 <td>{entry.outTime}</td>
                                             </tr>
                                         ))}
@@ -832,7 +841,7 @@ export default function Home() {
                                 {/* Dynamically create room name inputs */}
                                 {Array.from({ length: building.noOfRooms }, (_, index) => (
                                     <div className='roomname' key={index}>
-                                        <label>Room {index + 1} Name:</label>
+                                        <label>Beds {index + 1} Name:</label>
                                         <input
                                             type="text"
                                             value={roomNames[index] || ''}
@@ -888,6 +897,8 @@ export default function Home() {
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
+                                <label>Name:</label>
+                                <input type="text" name="name" onChange={handleArrivalChange} required />
                                 <label>Day of Arrival:</label>
                                 <input type="date" name="day" onChange={handleArrivalChange} required />
                                 <label>Time of Arrival:</label>
