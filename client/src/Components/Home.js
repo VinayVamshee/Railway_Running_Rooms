@@ -454,47 +454,55 @@ export default function Home() {
         fetchUsers();
     }, []);
 
+    const totalRooms = fetchedBuildings.reduce((acc, building) => acc + building.rooms.length, 0);
+    const totalVacancies = fetchedBuildings.reduce((acc, building) => acc + calculateAvailableRooms(building.rooms), 0);
+
     return (
         <div className='Home'>
             <h3>CREW & TRAIN MANAGER COMBINED RUNNING ROOM <strong>{username}</strong> SECR</h3>
             <div className='navbar'>
 
-                {
-                    isAdminLoggedIn ?
-                        <>
-                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BuildingRoomsModal" onClick={resetForm}>Add Building and Rooms</button>
-                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Register Station</button>
-                        </>
+                <div className="totals">
+                    Total Vacancies: <strong>{totalVacancies}</strong> / {totalRooms}
+                </div>
+                <div className='navigation-buttons'>
+                    {
+                        isAdminLoggedIn ?
+                            <>
+                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BuildingRoomsModal" onClick={resetForm}>Add Building and Rooms</button>
+                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Register Station</button>
+                            </>
 
-                        :
-                        null
-                }
-                {
-                    isLoggedIn ?
-                        <>
-                            <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#PeakTimeModal">Peak Time</button>
-                            <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}>Show Arrival & Departure</button>
-                        </>
-                        :
-                        null
-                }
-                {
-                    isAdminLoggedIn ?
-                        <button className="btn btn-info" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Show User Details</button>
-                        :
-                        <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Admin Login</button>
-                }
-                {
-                    isLoggedIn ?
-                        <button type="button" className="btn btn-danger" onClick={handleLogout}>Logout</button>
-                        :
-                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#LoginModal">Login</button>
-                }
-                {isAdminLoggedIn && (
-                    <button type="button" className="btn btn-danger" onClick={handleAdminLogout}>
-                        Admin Logout
-                    </button>
-                )}
+                            :
+                            null
+                    }
+                    {
+                        isLoggedIn ?
+                            <>
+                                <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#PeakTimeModal">Peak Time</button>
+                                <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}>Show Arrival & Departure</button>
+                            </>
+                            :
+                            null
+                    }
+                    {
+                        isAdminLoggedIn ?
+                            <button className="btn btn-info" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Show User Details</button>
+                            :
+                            <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Admin Login</button>
+                    }
+                    {
+                        isLoggedIn ?
+                            <button type="button" className="btn btn-danger" onClick={handleLogout}>Logout</button>
+                            :
+                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#LoginModal">Login</button>
+                    }
+                    {isAdminLoggedIn && (
+                        <button type="button" className="btn btn-danger" onClick={handleAdminLogout}>
+                            Admin Logout
+                        </button>
+                    )}
+                </div>
 
                 {/* Login Modal */}
                 <div className="modal fade" id="LoginModal" tabIndex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
@@ -841,7 +849,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-
 
             <div className='Buildings'>
                 {fetchedBuildings && (
