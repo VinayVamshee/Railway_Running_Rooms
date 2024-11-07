@@ -826,7 +826,7 @@ export default function Home() {
                             <div className="modal-body">
                                 <label>Building Name:</label>
                                 <input type="text" value={building.name} onChange={handleBuildingNameChange} required />
-                                <label>Input total number of rooms:</label>
+                                <label>Input total number of beds:</label>
                                 <input type="number" value={building.noOfRooms} onChange={handleNumberOfRoomsChange} min="0" required />
 
                                 {/* Dynamically create room name inputs */}
@@ -858,8 +858,8 @@ export default function Home() {
                             return (
                                 <div className='building-info' key={index}>
                                     <h4>{building.name}</h4>
-                                    <p>Total Rooms: {building.rooms.length}
-                                        <br />Available Rooms: <strong>{availableRooms}</strong></p>
+                                    <p>Total Beds: {building.rooms.length}
+                                        <br />Available Beds: <strong>{availableRooms}</strong></p>
                                     {
                                         isAdminLoggedIn ?
                                             <>
@@ -944,7 +944,7 @@ export default function Home() {
                                                     key={room._id}
                                                     className={`${roomClass} btn`}
                                                     onClick={() => handleRoomClick(room, building._id)}>
-                                                    {room.roomName || `Room ${room.roomNumber}`}
+                                                    {room.roomName || `Bed ${room.roomNumber}`}
                                                 </button>
                                             );
                                         })}
