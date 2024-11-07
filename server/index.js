@@ -177,7 +177,7 @@ app.delete('/buildings/:id', authenticateToken, async (req, res) => {
 
 app.post('/buildings/:buildingId/rooms/:roomId/checkin', authenticateToken, async (req, res) => {
     const { buildingId, roomId } = req.params;
-    const { day, inTime } = req.body;
+    const { name,day, inTime } = req.body;
 
     try {
         const building = await Building.findOne({ _id: buildingId, user: req.user.id });
@@ -189,7 +189,7 @@ app.post('/buildings/:buildingId/rooms/:roomId/checkin', authenticateToken, asyn
             return res.status(404).json({ message: 'Room not found' });
         }
 
-        room.logs.push({ day, inTime });
+        room.logs.push({ name, day, inTime });
         await building.save();
 
         res.status(200).json({ message: 'Check-in time logged successfully' });
