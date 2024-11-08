@@ -152,6 +152,7 @@ export default function Home() {
         setDepartureDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
+    const [disableSubmit, setDisableSubmit] = useState(false);
     const handleArrivalSubmit = async (e) => {
         e.preventDefault();
         if (selectedRoom === null || !currentBuildingId) {
@@ -160,6 +161,7 @@ export default function Home() {
         }
 
         try {
+            setDisableSubmit(true);
             await axios.post(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}/rooms/${selectedRoom}/checkin`, {
                 name: arrivalDetails.name,
                 day: arrivalDetails.day,
@@ -173,6 +175,10 @@ export default function Home() {
             window.location.reload();
         } catch (error) {
             alert('Error logging arrival: ' + (error.response ? error.response.data.message : error.message));
+        }finally {
+            setTimeout(() => {
+                setDisableSubmit(false); // Re-enable the submit button after 3 seconds
+            }, 3000);
         }
     };
 
@@ -184,6 +190,7 @@ export default function Home() {
         }
 
         try {
+            setDisableSubmit(true);
             await axios.post(
                 `https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}/rooms/${selectedRoom}/checkout`,
                 {
@@ -202,6 +209,10 @@ export default function Home() {
             window.location.reload();
         } catch (error) {
             alert('Error logging departure: ' + (error.response ? error.response.data.message : error.message));
+        }finally {
+            setTimeout(() => {
+                setDisableSubmit(false); // Re-enable the submit button after 3 seconds
+            }, 3000);
         }
     };
 
@@ -906,7 +917,7 @@ export default function Home() {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" className='btn btn-primary'>Submit Arrival</button>
+                                <button type="submit" disabled={disableSubmit} className='btn btn-primary'>Submit Arrival</button>
                             </div>
                         </form>
                     </div>
@@ -930,7 +941,7 @@ export default function Home() {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" className='btn btn-primary'>Submit Departure</button>
+                                <button type="submit" disabled={disableSubmit} className='btn btn-primary'>Submit Departure</button>
                             </div>
                         </form>
                     </div>
