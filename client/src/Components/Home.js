@@ -175,7 +175,7 @@ export default function Home() {
             window.location.reload();
         } catch (error) {
             alert('Error logging arrival: ' + (error.response ? error.response.data.message : error.message));
-        }finally {
+        } finally {
             setTimeout(() => {
                 setDisableSubmit(false); // Re-enable the submit button after 3 seconds
             }, 3000);
@@ -209,7 +209,7 @@ export default function Home() {
             window.location.reload();
         } catch (error) {
             alert('Error logging departure: ' + (error.response ? error.response.data.message : error.message));
-        }finally {
+        } finally {
             setTimeout(() => {
                 setDisableSubmit(false); // Re-enable the submit button after 3 seconds
             }, 3000);
@@ -403,7 +403,6 @@ export default function Home() {
                         data.push({
                             buildingName: building.name,
                             roomNumber: room.roomNumber,
-                            name: log.name,
                             inTime: log.inTime,
                             outTime: log.outTime || "No OutTime",
                             day: log.day,
@@ -478,6 +477,40 @@ export default function Home() {
     const totalRooms = fetchedBuildings.reduce((acc, building) => acc + building.rooms.length, 0);
     const totalVacancies = fetchedBuildings.reduce((acc, building) => acc + calculateAvailableRooms(building.rooms), 0);
 
+    const [dailyArrivals, setDailyArrivals] = useState([]);
+    const [monthlyAverageArrivals, setMonthlyAverageArrivals] = useState(0);
+    const [selectedDay, setSelectedDay] = useState('');
+
+    const fetchDailyAndMonthlyArrivals = (day) => {
+        const selectedDate = new Date(day);
+        let dailyCount = 0;
+        let monthlyCount = 0;
+        let daysInMonth = 0;
+
+        fetchedBuildings.forEach(building => {
+            building.rooms.forEach(room => {
+                room.logs.forEach(log => {
+                    const logDate = new Date(log.day);
+
+                    if (logDate.toDateString() === selectedDate.toDateString()) {
+                        dailyCount += 1;
+                    }
+
+                    if (
+                        logDate.getFullYear() === selectedDate.getFullYear() &&
+                        logDate.getMonth() === selectedDate.getMonth()
+                    ) {
+                        monthlyCount += 1;
+                    }
+                });
+            });
+        });
+
+        daysInMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
+        setDailyArrivals(dailyCount);
+        setMonthlyAverageArrivals((monthlyCount / daysInMonth).toFixed(2));
+    };
+
     return (
         <div className='Home'>
             <h3>CREW & TRAIN MANAGER COMBINED RUNNING ROOM <strong>{username}</strong> SECR</h3>
@@ -500,6 +533,7 @@ export default function Home() {
                     {
                         isLoggedIn ?
                             <>
+                                <button type='button' className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#arrivalStatsModal'>Arrived</button>
                                 <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#PeakTimeModal">Peak Time</button>
                                 <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}>Show Arrival & Departure</button>
                             </>
@@ -627,8 +661,7 @@ export default function Home() {
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th>Building</th>
-                    <th>Name</th>
+                                            <th>Building Name</th>
                                             <th>Room No</th>
                                             <th>Day</th>
                                             <th>Arrival Time</th>
@@ -640,7 +673,6 @@ export default function Home() {
                                         {arrivalDepartureData.map((entry, index) => (
                                             <tr key={index}>
                                                 <td>{entry.buildingName}</td>
-                                            <td>{entry.name}</td>
                                                 <td>{entry.roomNumber}</td>
                                                 <td>{formatDate(entry.day)}</td>
                                                 <td>{entry.inTime}</td>
@@ -653,6 +685,30 @@ export default function Home() {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Arrived Modal */}
+                <div className='modal fade' id='arrivalStatsModal' tabIndex='-1' aria-labelledby='arrivalStatsModalLabel' aria-hidden='true'>
+                    <div className='modal-dialog'>
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h5 className='modal-title' id='arrivalStatsModalLabel'>Select Date to View Arrivals</h5>
+                                <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close' />
+                            </div>
+                            <div className='modal-body'>
+                                <input type='date' value={selectedDay} onChange={(e) => {
+                                    const date = e.target.value;
+                                    setSelectedDay(date);
+                                    fetchDailyAndMonthlyArrivals(date);
+                                }} />
+                                <p>Number of arrivals: {dailyArrivals}</p>
+                            </div>
+                            <div className='modal-footer'>
+                                <p>Average monthly arrivals: {monthlyAverageArrivals}</p>
+                                <button type='button' className='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
                             </div>
                         </div>
                     </div>
