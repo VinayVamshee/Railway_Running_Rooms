@@ -662,9 +662,9 @@ export default function Home() {
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th>Building Name</th>
-                                            <th>Name</th>
+                                            <th>Building</th>
                                             <th>Room No</th>
+                                            <th>Name</th>
                                             <th>Day</th>
                                             <th>Arrival Time</th>
                                             <th>Out Day</th>
