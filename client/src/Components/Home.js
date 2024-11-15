@@ -403,6 +403,7 @@ export default function Home() {
                         data.push({
                             buildingName: building.name,
                             roomNumber: room.roomNumber,
+                            name: log.name,
                             inTime: log.inTime,
                             outTime: log.outTime || "No OutTime",
                             day: log.day,
@@ -662,6 +663,7 @@ export default function Home() {
                                     <thead>
                                         <tr>
                                             <th>Building Name</th>
+                                            <th>Name</th>
                                             <th>Room No</th>
                                             <th>Day</th>
                                             <th>Arrival Time</th>
@@ -674,6 +676,7 @@ export default function Home() {
                                             <tr key={index}>
                                                 <td>{entry.buildingName}</td>
                                                 <td>{entry.roomNumber}</td>
+                                            <td>{entry.name}</td>
                                                 <td>{formatDate(entry.day)}</td>
                                                 <td>{entry.inTime}</td>
                                                 <td>{formatDate(entry.outDay)}</td>
