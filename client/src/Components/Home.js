@@ -403,7 +403,6 @@ export default function Home() {
                         data.push({
                             buildingName: building.name,
                             roomNumber: room.roomNumber,
-                            name: log.name,
                             inTime: log.inTime,
                             outTime: log.outTime || "No OutTime",
                             day: log.day,
@@ -536,7 +535,7 @@ export default function Home() {
                             <>
                                 <button type='button' className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#arrivalStatsModal'>Arrived</button>
                                 <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#PeakTimeModal">Peak Time</button>
-                                <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}>Show Arrival & Departure</button>
+                                <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}> Arrival & Departure</button>
                             </>
                             :
                             null
@@ -662,9 +661,8 @@ export default function Home() {
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th>Building</th>
+                                            <th>Building Name</th>
                                             <th>Room No</th>
-                                            <th>Name</th>
                                             <th>Day</th>
                                             <th>Arrival Time</th>
                                             <th>Out Day</th>
@@ -676,7 +674,6 @@ export default function Home() {
                                             <tr key={index}>
                                                 <td>{entry.buildingName}</td>
                                                 <td>{entry.roomNumber}</td>
-                                            <td>{entry.name}</td>
                                                 <td>{formatDate(entry.day)}</td>
                                                 <td>{entry.inTime}</td>
                                                 <td>{formatDate(entry.outDay)}</td>
@@ -939,7 +936,7 @@ export default function Home() {
                             const availableRooms = calculateAvailableRooms(building.rooms);
                             return (
                                 <div className='building-info' key={index}>
-                                    <h4>{building.name}</h4>
+                                    <h4>{building.name} - WING</h4>
                                     <p>Total Beds: {building.rooms.length}
                                         <br />Available Beds: <strong>{availableRooms}</strong></p>
                                     {
