@@ -403,7 +403,9 @@ export default function Home() {
                         data.push({
                             buildingName: building.name,
                             roomNumber: room.roomNumber,
+                            roomName: room.roomName || "NA",
                             inTime: log.inTime,
+                            name: log.name || "No Name",
                             outTime: log.outTime || "No OutTime",
                             day: log.day,
                             outDay: log.outDay || "No OutDay"
@@ -523,8 +525,8 @@ export default function Home() {
                     {
                         isAdminLoggedIn ?
                             <>
-                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BuildingRoomsModal" onClick={resetForm}>Add Building and Rooms</button>
-                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Register Station</button>
+                                <button type="button" className="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#BuildingRoomsModal" onClick={resetForm}>Add Building and Rooms</button>
+                                <button type="button" className="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Register Station</button>
                             </>
 
                             :
@@ -533,27 +535,27 @@ export default function Home() {
                     {
                         isLoggedIn ?
                             <>
-                                <button type='button' className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#arrivalStatsModal'>Arrived</button>
-                                <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#PeakTimeModal">Peak Time</button>
-                                <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}> Arrival & Departure</button>
+                                <button type='button' className='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#arrivalStatsModal'>Arrived</button>
+                                <button type="button" className="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#PeakTimeModal">Peak Time</button>
+                                <button type="button" className="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}> Arrival & Departure</button>
                             </>
                             :
                             null
                     }
                     {
                         isAdminLoggedIn ?
-                            <button className="btn btn-info" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Show User Details</button>
+                            <button className="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Show User Details</button>
                             :
-                            <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Admin Login</button>
+                            <button className="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#AdminLoginModal">Admin Login</button>
                     }
                     {
                         isLoggedIn ?
-                            <button type="button" className="btn btn-danger" onClick={handleLogout}>Logout</button>
+                            <button type="button" className="btn btn-sm btn-danger" onClick={handleLogout}>Logout</button>
                             :
-                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#LoginModal">Login</button>
+                            <button type="button" className="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#LoginModal">Login</button>
                     }
                     {isAdminLoggedIn && (
-                        <button type="button" className="btn btn-danger" onClick={handleAdminLogout}>
+                        <button type="button" className="btn btn-sm btn-danger" onClick={handleAdminLogout}>
                             Admin Logout
                         </button>
                     )}
@@ -595,7 +597,7 @@ export default function Home() {
                                         />
                                     </div>
                                     <div className='modal-footer'>
-                                        <button type="button" className="btn btn-primary" onClick={handleLogin}>
+                                        <button type="button" className="btn btn-sm btn-primary" onClick={handleLogin}>
                                             Login
                                         </button>
                                     </div>
@@ -640,7 +642,7 @@ export default function Home() {
                                             required
                                         />
                                     </div>
-                                    <button type="button" className="btn btn-primary" onClick={handleRegister}>
+                                    <button type="button" className="btn btn-sm btn-primary" onClick={handleRegister}>
                                         Register
                                     </button>
                                 </form>
@@ -662,7 +664,8 @@ export default function Home() {
                                     <thead>
                                         <tr>
                                             <th>Building Name</th>
-                                            <th>Room No</th>
+                                            <th>Name</th>
+                                            <th>Bed No</th>
                                             <th>Day</th>
                                             <th>Arrival Time</th>
                                             <th>Out Day</th>
@@ -673,7 +676,8 @@ export default function Home() {
                                         {arrivalDepartureData.map((entry, index) => (
                                             <tr key={index}>
                                                 <td>{entry.buildingName}</td>
-                                                <td>{entry.roomNumber}</td>
+                                                <td>{entry.name}</td>
+                                                <td>{entry.roomName}</td>
                                                 <td>{formatDate(entry.day)}</td>
                                                 <td>{entry.inTime}</td>
                                                 <td>{formatDate(entry.outDay)}</td>
@@ -684,7 +688,7 @@ export default function Home() {
                                 </table>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -708,7 +712,7 @@ export default function Home() {
                             </div>
                             <div className='modal-footer'>
                                 <p>Average monthly arrivals: {monthlyAverageArrivals}</p>
-                                <button type='button' className='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
+                                <button type='button' className='btn btn-sm btn-secondary' data-bs-dismiss='modal'>Close</button>
                             </div>
                         </div>
                     </div>
@@ -716,7 +720,7 @@ export default function Home() {
 
                 {/* Peak Time Modal */}
                 <div className="modal fade" id="PeakTimeModal" tabIndex="-1" aria-labelledby="PeakTimeModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog modal-lg">
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h1 className="modal-title fs-5" id="PeakTimeModalLabel">Peak Time</h1>
@@ -731,38 +735,38 @@ export default function Home() {
                                 />
                                 <button
                                     type="button"
-                                    className="btn btn-primary"
+                                    className="btn btn-sm btn-primary"
                                     onClick={calculatePeakHours}
                                 >
                                     Calculate Peak Hours
                                 </button>
                                 <ul className="peaktime">
                                     {peakHours.length > 0 && (
-                                        <table className="table peaktime">
-                                            <thead>
-                                                <tr>
-                                                    <th>Time</th>
-                                                    <th>No. of Occupied Rooms</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {peakHours.map((hourData, index) => {
-                                                    const [time, count] = hourData.replace('Time: ', '').replace(' - Occupied Rooms: ', ',').split(',');
-                                                    return (
-                                                        <tr key={index}>
-                                                            <td>{time}</td>
-                                                            <td>{count}</td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                            </tbody>
-                                        </table>
+                                        <table className="table peaktime border-collapse w-full text-left border border-gray-300">
+                                        <thead>
+                                          <tr className="bg-gray-200">
+                                            <th className="border border-gray-300 px-4 py-2 bg-dark text-light">Time</th>
+                                            <th className="border border-gray-300 px-4 py-2 bg-dark text-light">No. of Occupied Rooms</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {peakHours.map((hourData, index) => {
+                                            const [time, count] = hourData.replace("Time: ", "").replace(" - Occupied Rooms: ", ",").split(",");
+                                            return (
+                                              <tr key={index} className="hover:bg-gray-100">
+                                                <td className="border border-gray-300 px-4 py-2">{time}</td>
+                                                <td className="border border-gray-300 px-4 py-2 text-center">{count}</td>
+                                              </tr>
+                                            );
+                                          })}
+                                        </tbody>
+                                      </table>
                                     )}
 
                                 </ul>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -825,7 +829,7 @@ export default function Home() {
                                                         required
                                                     />
                                                 </div>
-                                                <button type="submit" className="btn btn-primary">Login</button>
+                                                <button type="submit" className="btn btn-sm btn-primary">Login</button>
                                             </form>
                                         </>
                                 }
@@ -833,7 +837,7 @@ export default function Home() {
                             {
                                 isAdminLoggedIn ?
                                     <div className="modal-footer">
-                                        <button className="btn btn-link" data-bs-toggle="modal" data-bs-target="#AdminRegisterModal" data-bs-dismiss="modal">
+                                        <button className="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#AdminRegisterModal" data-bs-dismiss="modal">
                                             Register as Admin
                                         </button>
                                     </div>
@@ -879,11 +883,11 @@ export default function Home() {
                                             required
                                         />
                                     </div>
-                                    <button type="submit" className="btn btn-primary">Register</button>
+                                    <button type="submit" className="btn btn-sm btn-primary">Register</button>
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button className="btn btn-link" data-bs-toggle="modal" data-bs-target="#AdminLoginModal" data-bs-dismiss="modal">
+                                <button className="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#AdminLoginModal" data-bs-dismiss="modal">
                                     Back to Login
                                 </button>
                             </div>
@@ -921,8 +925,8 @@ export default function Home() {
                                 ))}
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={resetForm}>Close</button>
-                                <button type="submit" className='btn btn-primary'>{editMode ? 'Update Building' : 'Submit Building and Rooms'}</button>
+                                <button type="button" className="btn btn-sm btn-secondary" data-bs-dismiss="modal" onClick={resetForm}>Close</button>
+                                <button type="submit" className='btn btn-sm btn-primary'>{editMode ? 'Update Building' : 'Submit Building and Rooms'}</button>
                             </div>
                         </form>
                     </div>
@@ -943,8 +947,8 @@ export default function Home() {
                                         isAdminLoggedIn ?
                                             <>
                                                 <div className='EditOption'>
-                                                    <button className='btn btn-outline-primary' onClick={() => handleEdit(building)}>Edit</button>
-                                                    <button className='btn btn-outline-danger' onClick={() => handleDelete(building._id)}>Delete</button>
+                                                    <button className='btn btn-sm btn-outline-primary' onClick={() => handleEdit(building)}>Edit</button>
+                                                    <button className='btn btn-sm btn-outline-danger' onClick={() => handleDelete(building._id)}>Delete</button>
                                                 </div>
                                             </>
                                             :
@@ -975,8 +979,8 @@ export default function Home() {
                                 <input type="time" name="time" onChange={handleArrivalChange} required />
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" disabled={disableSubmit} className='btn btn-primary'>Submit Arrival</button>
+                                <button type="button" className="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" disabled={disableSubmit} className='btn btn-sm btn-primary'>Submit Arrival</button>
                             </div>
                         </form>
                     </div>
@@ -999,8 +1003,8 @@ export default function Home() {
                                 <input type="time" name="time" onChange={handleDepartureChange} required />
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" disabled={disableSubmit} className='btn btn-primary'>Submit Departure</button>
+                                <button type="button" className="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" disabled={disableSubmit} className='btn btn-sm btn-primary'>Submit Departure</button>
                             </div>
                         </form>
                     </div>
@@ -1034,7 +1038,7 @@ export default function Home() {
                                 </div>
                             ))}
                         </div>
-                        <button className='btn btn-success mt-2' onClick={downloadUserData}>Download Excel Sheet</button>
+                        <button className='btn btn-sm btn-success mt-2' onClick={downloadUserData}>Download Excel Sheet</button>
                     </>
                     :
                     null
