@@ -37,14 +37,15 @@
 }
 
 .totals {
-    background-color: gainsboro;
-    padding: 5px;
+    background-color: rgb(0, 128, 23);
+    padding: 3px;
     border-radius: 10px;
 }
 
 .totals strong {
-    font-size: large;
-    color: rgb(0, 159, 0);
+    font-size: larger;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
 }
 
 .navigation-buttons {
