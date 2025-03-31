@@ -50,28 +50,27 @@ export default function Home() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (!building.name || building.noOfRooms <= 0) {
             alert('Building name and room names are required.');
             return;
         }
-
-        const roomsData = Array.from({ length: building.noOfRooms }, (_, index) => ({
+    
+        const roomsData = roomNames.map((roomName, index) => ({
             roomNumber: index + 1,
-            roomName: roomNames[index] || '',
+            roomName: roomName || '',
         }));
-
+    
         try {
             if (editMode) {
                 const userConfirmed = window.confirm(
-                    "Please be advised that editing the building will result in the deletion of all associated data, including logs for the building and its rooms. We strongly recommend downloading the relevant Excel sheet prior to making any changes. Do you wish to proceed with the edits?"
+                    "Editing the building will update only the changed fields. Do you want to proceed?"
                 );
-
+    
                 if (userConfirmed) {
-                    // eslint-disable-next-line
-                    const response = await axios.put(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}`, {
+                    await axios.put(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}`, {
                         name: building.name,
-                        rooms: roomsData,
+                        rooms: roomsData, // Send only updated rooms, backend will merge them
                     }, {
                         headers: {
                             Authorization: token,
@@ -79,8 +78,7 @@ export default function Home() {
                     });
                 }
             } else {
-                // eslint-disable-next-line
-                const response = await axios.post('https://railway-running-rooms-server.vercel.app/buildings', {
+                await axios.post('https://railway-running-rooms-server.vercel.app/buildings', {
                     name: building.name,
                     rooms: roomsData,
                 }, {
@@ -89,15 +87,15 @@ export default function Home() {
                     },
                 });
             }
-
+    
             fetchBuildings();
             resetForm();
             window.location.reload();
-
         } catch (error) {
             alert('Error submitting building and rooms: ' + error.message);
         }
     };
+    
 
     const handleEdit = (building) => {
         const roomNames = building.rooms.map(room => room.roomName || '');
