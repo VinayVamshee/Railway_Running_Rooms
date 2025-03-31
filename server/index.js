@@ -143,17 +143,34 @@ app.put('/buildings/:id', authenticateToken, async (req, res) => {
             return res.status(400).json({ message: 'Name or rooms must be provided' });
         }
 
-        const updatedBuilding = await Building.findOneAndUpdate(
-            { _id: id, user: req.user.id },
-            { name, rooms },
-            { new: true, runValidators: true }
-        );
+        const building = await Building.findOne({ _id: id, user: req.user.id });
 
-        if (!updatedBuilding) {
+        if (!building) {
             return res.status(404).json({ message: 'Building not found' });
         }
 
-        res.status(200).json(updatedBuilding);
+        // Update building name if provided
+        if (name) {
+            building.name = name;
+        }
+
+        // Update room details without deleting logs
+        if (rooms) {
+            rooms.forEach((newRoom) => {
+                const existingRoom = building.rooms.find(room => room.roomNumber === newRoom.roomNumber);
+                
+                if (existingRoom) {
+                    // Update only room name if it exists
+                    existingRoom.roomName = newRoom.roomName || existingRoom.roomName;
+                } else {
+                    // If it's a new room, add it (without logs)
+                    building.rooms.push({ roomNumber: newRoom.roomNumber, roomName: newRoom.roomName, logs: [] });
+                }
+            });
+        }
+
+        await building.save();
+        res.status(200).json(building);
     } catch (error) {
         console.error('Error updating building:', error);
         res.status(500).json({ message: 'Error updating building' });
