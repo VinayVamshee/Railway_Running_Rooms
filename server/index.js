@@ -36,7 +36,7 @@ app.post('/admin/login', async (req, res) => {
     const { username, password } = req.body;
     const isAdminAuthenticated = true;
     if (isAdminAuthenticated) {
-        const adminToken = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+        const adminToken = jwt.sign({ username }, SECRET_KEY);
         res.json({ success: true, adminToken });
     } else {
         res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -155,10 +155,16 @@ app.put('/buildings/:id', authenticateToken, async (req, res) => {
         }
 
         // Update room details without deleting logs
+        // Update room details without deleting logs
         if (rooms) {
+            // Remove extra rooms if the new list has fewer rooms
+            building.rooms = building.rooms.filter(room =>
+                rooms.some(newRoom => newRoom.roomNumber === room.roomNumber)
+            );
+
             rooms.forEach((newRoom) => {
                 const existingRoom = building.rooms.find(room => room.roomNumber === newRoom.roomNumber);
-                
+
                 if (existingRoom) {
                     // Update only room name if it exists
                     existingRoom.roomName = newRoom.roomName || existingRoom.roomName;
@@ -168,6 +174,7 @@ app.put('/buildings/:id', authenticateToken, async (req, res) => {
                 }
             });
         }
+
 
         await building.save();
         res.status(200).json(building);
@@ -194,7 +201,7 @@ app.delete('/buildings/:id', authenticateToken, async (req, res) => {
 
 app.post('/buildings/:buildingId/rooms/:roomId/checkin', authenticateToken, async (req, res) => {
     const { buildingId, roomId } = req.params;
-    const { name,day, inTime } = req.body;
+    const { name, day, inTime } = req.body;
 
     try {
         const building = await Building.findOne({ _id: buildingId, user: req.user.id });
