@@ -56,7 +56,8 @@ export default function Home() {
             return;
         }
     
-        const roomsData = roomNames.map((roomName, index) => ({
+        // Ensure only selected number of rooms are sent
+        const roomsData = roomNames.slice(0, building.noOfRooms).map((roomName, index) => ({
             roomNumber: index + 1,
             roomName: roomName || '',
         }));
@@ -70,7 +71,7 @@ export default function Home() {
                 if (userConfirmed) {
                     await axios.put(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}`, {
                         name: building.name,
-                        rooms: roomsData, // Send only updated rooms, backend will merge them
+                        rooms: roomsData,
                     }, {
                         headers: {
                             Authorization: token,
@@ -95,7 +96,7 @@ export default function Home() {
             alert('Error submitting building and rooms: ' + error.message);
         }
     };
-    
+        
 
     const handleEdit = (building) => {
         const roomNames = building.rooms.map(room => room.roomName || '');
