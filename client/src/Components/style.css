@@ -6,6 +6,25 @@
     background-size: cover;
 }
 
+.Search_Arrival {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; 
+    padding-bottom: 10px;
+    
+    border-bottom: 0.5px solid black;
+}
+
+
+.Search_Arrival input {
+    border: 0.5px solid grey;
+    border-radius: 10px;
+
+    padding: 5px;
+}
+
 .Home {
     padding: 10px;
     height: fit-content;
