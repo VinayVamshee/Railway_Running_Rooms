@@ -406,6 +406,17 @@ export default function Home() {
             });
         });
 
+        data.sort((a, b) => {
+            const dateA = new Date(a.day);
+            const dateB = new Date(b.day);
+
+            if (dateB - dateA !== 0) {
+                return dateB - dateA; // Sort by day (latest first)
+            } else {
+                return new Date(b.inTime) - new Date(a.inTime); // If same day, sort by inTime (latest first)
+            }
+        });
+
         setArrivalDepartureData(data);
     };
 
@@ -520,6 +531,31 @@ export default function Home() {
         setDailyArrivals(dailyCount);
         setMonthlyAverageArrivals((monthlyCount / daysInMonth).toFixed(2));
     };
+
+
+    const itemsPerPage = 10;
+
+    // Function to get paginated data
+    const getPaginatedData = (data, currentPage) => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return data.slice(startIndex, startIndex + itemsPerPage);
+    };
+
+    // Function to calculate total pages
+    const getTotalPages = (data) => {
+        return Math.ceil(data.length / itemsPerPage);
+    };
+
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const totalPages = getTotalPages(filteredArrivalDepartureData);
+    const currentData = getPaginatedData(filteredArrivalDepartureData, currentPage);
+
+    // Pagination control functions
+    const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+
+
 
     return (
         <div className='Home'>
@@ -952,6 +988,7 @@ export default function Home() {
                     <table className="table w-100">
                         <thead>
                             <tr>
+                                <th>S.No</th>
                                 <th>Building Name</th>
                                 <th>Name</th>
                                 <th>Bed No</th>
@@ -962,8 +999,9 @@ export default function Home() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredArrivalDepartureData.map((entry, index) => (
+                            {currentData.map((entry, index) => (
                                 <tr key={index}>
+                                    <td>{(currentPage - 1) * itemsPerPage + index + 1}</td> {/* Serial Number */}
                                     <td>{entry.buildingName}</td>
                                     <td>{entry.name}</td>
                                     <td>{entry.roomName}</td>
@@ -976,6 +1014,16 @@ export default function Home() {
                         </tbody>
                     </table>
 
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                        <button className="btn btn-secondary" onClick={prevPage} disabled={currentPage === 1}>
+                            Previous
+                        </button>
+                        <span>Page {currentPage} of {totalPages}</span>
+                        <button className="btn btn-secondary" onClick={nextPage} disabled={currentPage === totalPages}>
+                            Next
+                        </button>
+                    </div>
+                    <button className='btn btn-sm btn-success mt-3' onClick={downloadUserData}>Download Arrival & Depature Report</button>
                 </div>
             </div>
 
@@ -1085,7 +1133,6 @@ export default function Home() {
                                 </div>
                             ))}
                         </div>
-                        <button className='btn btn-sm btn-success mt-2' onClick={downloadUserData}>Download Excel Sheet</button>
                     </>
                     :
                     null
