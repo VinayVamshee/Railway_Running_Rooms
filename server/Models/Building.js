@@ -1,4 +1,3 @@
-// models/Building.js
 const mongoose = require('mongoose');
 
 const logSchema = new mongoose.Schema({
@@ -7,7 +6,7 @@ const logSchema = new mongoose.Schema({
     inTime: { type: String, required: true },
     outTime: { type: String },
     outDay: { type: String },
-});
+}, { timestamps: true });
 
 const roomSchema = new mongoose.Schema({
     roomNumber: { type: Number, required: true },
