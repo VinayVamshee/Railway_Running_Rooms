@@ -50,24 +50,24 @@ export default function Home() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (!building.name || building.noOfRooms <= 0) {
             alert('Building name and room names are required.');
             return;
         }
-    
+
         // Ensure only selected number of rooms are sent
         const roomsData = roomNames.slice(0, building.noOfRooms).map((roomName, index) => ({
             roomNumber: index + 1,
             roomName: roomName || '',
         }));
-    
+
         try {
             if (editMode) {
                 const userConfirmed = window.confirm(
                     "Editing the building will update only the changed fields. Do you want to proceed?"
                 );
-    
+
                 if (userConfirmed) {
                     await axios.put(`https://railway-running-rooms-server.vercel.app/buildings/${currentBuildingId}`, {
                         name: building.name,
@@ -88,7 +88,7 @@ export default function Home() {
                     },
                 });
             }
-    
+
             fetchBuildings();
             resetForm();
             window.location.reload();
@@ -96,7 +96,7 @@ export default function Home() {
             alert('Error submitting building and rooms: ' + error.message);
         }
     };
-        
+
 
     const handleEdit = (building) => {
         const roomNames = building.rooms.map(room => room.roomName || '');
@@ -388,38 +388,47 @@ export default function Home() {
 
     const fetchArrivalDepartureData = () => {
         const data = [];
-        const today = new Date();
-        const past30Days = new Date();
-        past30Days.setDate(today.getDate() - 30);
-
-        const todayString = today.toISOString().split('T')[0];
-        const past30DaysString = past30Days.toISOString().split('T')[0];
 
         fetchedBuildings.forEach(building => {
             building.rooms.forEach(room => {
                 room.logs.forEach(log => {
-                    if (log.day >= past30DaysString && log.day <= todayString) {
-                        data.push({
-                            buildingName: building.name,
-                            roomNumber: room.roomNumber,
-                            roomName: room.roomName || "NA",
-                            inTime: log.inTime,
-                            name: log.name || "No Name",
-                            outTime: log.outTime || "No OutTime",
-                            day: log.day,
-                            outDay: log.outDay || "No OutDay"
-                        });
-                    }
+                    data.push({
+                        buildingName: building.name,
+                        roomNumber: room.roomNumber,
+                        roomName: room.roomName || "NA",
+                        inTime: log.inTime,
+                        name: log.name || "No Name",
+                        outTime: log.outTime || "No OutTime",
+                        day: log.day,
+                        outDay: log.outDay || "No OutDay"
+                    });
                 });
             });
         });
+
         setArrivalDepartureData(data);
     };
+
 
     const handleShowModal = () => {
         setArrivalDepartureData([]);
         fetchArrivalDepartureData();
     };
+
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [arrivalDate, setArrivalDate] = useState('');
+
+
+    const filteredArrivalDepartureData = (searchTerm || arrivalDate)
+        ? arrivalDepartureData.filter(entry => {
+            const matchesName = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesDate = arrivalDate ? entry.day === arrivalDate : true;
+            return matchesName && matchesDate;
+        })
+        : arrivalDepartureData;
+
+
 
     const [admin, setAdmin] = useState({ username: '', password: '' });
     const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -534,9 +543,10 @@ export default function Home() {
                     {
                         isLoggedIn ?
                             <>
-                                <button type='button' className='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#arrivalStatsModal'>Arrived</button>
+                                <button type='button' className='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#arrivalStatsModal'>Average Arrival</button>
                                 <button type="button" className="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#PeakTimeModal">Peak Time</button>
-                                <button type="button" className="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}> Arrival & Departure</button>
+                                {/* <button type="button" className="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#Date&TimeModal" onClick={handleShowModal}> Arrival & Departure</button> */}
+                                <button className="btn btn-warning btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#CollapseArrivalDepatureData" aria-expanded="false" aria-controls="CollapseArrivalDepatureData" onClick={handleShowModal}>Arrival & Depature</button>
                             </>
                             :
                             null
@@ -742,24 +752,24 @@ export default function Home() {
                                 <ul className="peaktime">
                                     {peakHours.length > 0 && (
                                         <table className="table peaktime border-collapse w-full text-left border border-gray-300">
-                                        <thead>
-                                          <tr className="bg-gray-200">
-                                            <th className="border border-gray-300 px-4 py-2 bg-dark text-light">Time</th>
-                                            <th className="border border-gray-300 px-4 py-2 bg-dark text-light">No. of Occupied Rooms</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {peakHours.map((hourData, index) => {
-                                            const [time, count] = hourData.replace("Time: ", "").replace(" - Occupied Rooms: ", ",").split(",");
-                                            return (
-                                              <tr key={index} className="hover:bg-gray-100">
-                                                <td className="border border-gray-300 px-4 py-2">{time}</td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">{count}</td>
-                                              </tr>
-                                            );
-                                          })}
-                                        </tbody>
-                                      </table>
+                                            <thead>
+                                                <tr className="bg-gray-200">
+                                                    <th className="border border-gray-300 px-4 py-2 bg-dark text-light">Time</th>
+                                                    <th className="border border-gray-300 px-4 py-2 bg-dark text-light">No. of Occupied Rooms</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {peakHours.map((hourData, index) => {
+                                                    const [time, count] = hourData.replace("Time: ", "").replace(" - Occupied Rooms: ", ",").split(",");
+                                                    return (
+                                                        <tr key={index} className="hover:bg-gray-100">
+                                                            <td className="border border-gray-300 px-4 py-2">{time}</td>
+                                                            <td className="border border-gray-300 px-4 py-2 text-center">{count}</td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
                                     )}
 
                                 </ul>
@@ -931,6 +941,44 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+
+            <div className="collapse my-2" id="CollapseArrivalDepatureData">
+                <div className="card card-body">
+                    <div className='Search_Arrival'>
+                        <input placeholder='Search Name' type='text' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        <input type='date' placeholder='Arrival Date' value={arrivalDate} onChange={(e) => setArrivalDate(e.target.value)} />
+                    </div>
+
+                    <table className="table w-100">
+                        <thead>
+                            <tr>
+                                <th>Building Name</th>
+                                <th>Name</th>
+                                <th>Bed No</th>
+                                <th>Day</th>
+                                <th>Arrival Time</th>
+                                <th>Out Day</th>
+                                <th>Departure Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredArrivalDepartureData.map((entry, index) => (
+                                <tr key={index}>
+                                    <td>{entry.buildingName}</td>
+                                    <td>{entry.name}</td>
+                                    <td>{entry.roomName}</td>
+                                    <td>{formatDate(entry.day)}</td>
+                                    <td>{entry.inTime}</td>
+                                    <td>{formatDate(entry.outDay)}</td>
+                                    <td>{entry.outTime}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
 
             <div className='Buildings'>
                 {fetchedBuildings && (
