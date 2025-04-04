@@ -406,17 +406,12 @@ export default function Home() {
             });
         });
 
-        data.sort((a, b) => {
-            const dateA = new Date(a.day);
-            const dateB = new Date(b.day);
-
-            if (dateB - dateA !== 0) {
-                return dateB - dateA; // Sort by day (latest first)
-            } else {
-                return new Date(b.inTime) - new Date(a.inTime); // If same day, sort by inTime (latest first)
-            }
+                data.sort((a, b) => {
+            const dateA = new Date(`${a.day} ${a.inTime}`);
+            const dateB = new Date(`${b.day} ${b.inTime}`);
+    
+            return dateB - dateA; 
         });
-
         setArrivalDepartureData(data);
     };
 
