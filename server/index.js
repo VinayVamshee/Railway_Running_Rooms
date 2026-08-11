@@ -13,7 +13,12 @@ const moment = require('moment');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: ['https://rrr-secr.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'admintoken'],
+    credentials: true
+}));
 app.use(express.json());
 
 
