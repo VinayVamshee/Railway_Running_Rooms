@@ -6,16 +6,24 @@ const connectDB = require('./DB/ConnectDB');
 const Building = require('./Models/Building');
 const User = require('./Models/User');
 const Admin = require('./Models/Admin');
+const OpenAI = require("openai");
+const fs = require('fs');
+const { exec } = require('child_process');
+const moment = require('moment'); 
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+
+
+
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const SECRET_KEY = process.env.SECRET_KEY;
+const client = new OpenAI({ apiKey: process.env.GPT_API });
 
 app.post('/admin/register', async (req, res) => {
     try {
@@ -249,6 +257,228 @@ app.post('/buildings/:buildingId/rooms/:roomId/checkout', authenticateToken, asy
         res.status(500).json({ message: 'Error logging check-out' });
     }
 });
+
+
+
+app.get('/getMonthlyStats', authenticateToken, async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    const buildings = await Building.find({ user: req.user.id });
+    let logsThisMonth = [];
+
+    const monthStart = moment(`${year}-${month}-01`);
+    const monthEnd = monthStart.clone().endOf('month');
+
+    buildings.forEach(b => {
+      b.rooms.forEach(r => {
+        r.logs.forEach(l => {
+          const logDate = moment(l.day, 'YY-MM-DD');
+          if (logDate.isBetween(monthStart, monthEnd, 'day', '[]')) {
+            logsThisMonth.push({ building: b.name, room: r.roomName, ...l });
+          }
+        });
+      });
+    });
+
+    res.json({
+      totalLogs: logsThisMonth.length,
+      logs: logsThisMonth
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching monthly stats' });
+  }
+});
+
+
+
+app.get('/getPeakHour', authenticateToken, async (req, res) => {
+  try {
+    const buildings = await Building.find({ user: req.user.id });
+    const hourCount = {};
+
+    buildings.forEach(b => {
+      b.rooms.forEach(r => {
+        r.logs.forEach(l => {
+          if (l.inTime) {
+            const hour = l.inTime.split(':')[0];
+            hourCount[hour] = (hourCount[hour] || 0) + 1;
+          }
+        });
+      });
+    });
+
+    let peakHour = null;
+    let maxCount = 0;
+    for (const [hour, count] of Object.entries(hourCount)) {
+      if (count > maxCount) {
+        maxCount = count;
+        peakHour = hour;
+      }
+    }
+
+    if (!peakHour) return res.json({ message: 'No check-in data available for peak hour.' });
+
+    res.json({ peakHour, totalCheckins: maxCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching peak hour' });
+  }
+});
+
+app.get('/getLastArrival', authenticateToken, async (req, res) => {
+  const username = req.query.username?.toLowerCase();
+  if (!username) return res.status(400).json({ message: 'Username is required as query param' });
+
+  try {
+    const buildings = await Building.find({ user: req.user.id });
+    let latestLog = null;
+
+    buildings.forEach(b => {
+      b.rooms.forEach(r => {
+        r.logs.forEach(l => {
+          if (l.name && l.name.toLowerCase().includes(username)) {
+            const logTime = new Date(`${l.day}T${l.inTime}`);
+            if (!latestLog || logTime > latestLog.time) {
+              latestLog = { ...l, building: b.name, room: r.roomName, time: logTime };
+            }
+          }
+        });
+      });
+    });
+
+    if (!latestLog) return res.json({ message: 'No check-in found for this user.' });
+
+    res.json(latestLog);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching last arrival' });
+  }
+});
+
+
+app.get('/getLastDeparture', authenticateToken, async (req, res) => {
+  const username = req.query.username?.toLowerCase();
+  if (!username) return res.status(400).json({ message: 'Username is required as query param' });
+
+  try {
+    const buildings = await Building.find({ user: req.user.id });
+    let latestLog = null;
+
+    buildings.forEach(b => {
+      b.rooms.forEach(r => {
+        r.logs.forEach(l => {
+          if (l.name && l.name.toLowerCase().includes(username) && l.outTime) {
+            const logTime = new Date(`${l.outDay}T${l.outTime}`);
+            if (!latestLog || logTime > latestLog.time) {
+              latestLog = { ...l, building: b.name, room: r.roomName, time: logTime };
+            }
+          }
+        });
+      });
+    });
+
+    if (!latestLog) return res.json({ message: 'No checkout found for this user.' });
+
+    res.json(latestLog);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching last departure' });
+  }
+});
+
+
+
+app.post('/ask', authenticateToken, async (req, res) => {
+    const { question } = req.body;
+
+    try {
+        console.log("\n🟢 /ask route triggered!");
+        console.log("👉 User ID:", req.user.id);
+        console.log("👉 Question received:", question);
+
+        // Map AI-detectable intents to backend endpoints
+        const intentMapping = [
+            { keywords: ['monthly', 'this month', 'total logs', 'entries'], endpoint: '/getMonthlyStats' },
+            { keywords: ['peak', 'rush hour'], endpoint: '/getPeakHour' },
+            { keywords: ['last arrived', 'arrive', 'check-in'], endpoint: '/getLastArrival' },
+            { keywords: ['checkout', 'departure', 'left'], endpoint: '/getLastDeparture' }
+        ];
+
+        // Determine intent based on question
+        let matchedIntent = null;
+        for (const intent of intentMapping) {
+            for (const kw of intent.keywords) {
+                if (question.toLowerCase().includes(kw.toLowerCase())) {
+                    matchedIntent = intent;
+                    break;
+                }
+            }
+            if (matchedIntent) break;
+        }
+
+        if (!matchedIntent) {
+            return res.json({ answer: "Sorry, this feature is not yet supported." });
+        }
+
+        // Call the corresponding backend endpoint
+        const axios = require('axios');
+        const endpointUrl = `http://localhost:${PORT}${matchedIntent.endpoint}`;
+        let endpointResponse;
+
+        try {
+            endpointResponse = await axios.get(endpointUrl, {
+                headers: { Authorization: req.headers['authorization'] }
+            });
+        } catch (err) {
+            console.error("❌ Error calling endpoint:", matchedIntent.endpoint, err.message);
+            return res.json({ answer: `The feature for this request exists but could not return a proper response.` });
+        }
+
+        const data = endpointResponse.data;
+
+        // Prepare prompt for Ollama
+        const prompt = `
+You are a smart assistant for the Railway Running Room system.
+The user asked:
+"${question}"
+
+Here is the data from the system:
+${JSON.stringify(data, null, 2)}
+
+Answer the user in simple, clear language.
+If no relevant data is available, say that clearly.
+`;
+
+        // Execute Ollama with a timeout
+        const { exec } = require('child_process');
+        const command = `ollama run mistral --model local --prompt '${prompt.replace(/'/g, '"')}'`;
+
+        const child = exec(command, { timeout: 10000 }, (error, stdout, stderr) => {
+            if (error) {
+                if (error.killed) {
+                    console.error("❌ Ollama timeout reached.");
+                    return res.json({ answer: "No answer found (LLM timeout)." });
+                }
+                console.error("❌ Ollama error:", error.message);
+                return res.status(500).json({ answer: "Error with local LLM" });
+            }
+
+            const answer = stdout.trim();
+            console.log("🤖 Ollama Answer:", answer);
+
+            res.json({ answer });
+        });
+
+    } catch (error) {
+        console.error("❌ Error in /ask route:", error.message);
+        res.status(500).json({ answer: "Error processing query." });
+    }
+});
+
+
+
+
 
 const start = async () => {
     try {
