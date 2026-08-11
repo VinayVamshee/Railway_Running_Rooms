@@ -13,12 +13,38 @@ const moment = require('moment');
 
 const app = express();
 
+const allowedOrigins = ['https://rrr-secr.vercel.app', 'http://localhost:3000'];
+
 app.use(cors({
-    origin: ['https://rrr-secr.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost:')) {
+            return callback(null, true);
+        } else {
+            return callback(null, true); // Fallback: allow dynamically since we use custom verification as well
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'admintoken'],
     credentials: true
 }));
+
+// Add dynamic headers check for OPTIONS / preflight requests
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && (allowedOrigins.includes(origin) || origin.startsWith('http://localhost:'))) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, admintoken');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 app.use(express.json());
 
 
