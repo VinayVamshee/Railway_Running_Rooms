@@ -11,6 +11,7 @@ const logSchema = new mongoose.Schema({
 const roomSchema = new mongoose.Schema({
     roomNumber: { type: Number, required: true },
     roomName: { type: String }, // Add this line
+    active: { type: Boolean, default: true },
     logs: [logSchema],
 });
 

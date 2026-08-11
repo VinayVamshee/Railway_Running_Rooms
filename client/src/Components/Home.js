@@ -35,7 +35,7 @@ import { useToast } from './common/Toast';
 import ConfirmDialog from './common/ConfirmDialog';
 
 // ─── API Base URL ───────────────────────────────────────────────────────────
-const API = 'https://railway-running-rooms-server.vercel.app';
+const API = 'https://railway-running-rooms-server.vercel.app'; 
 
 export default function Home() {
   const toast = useToast();
@@ -445,6 +445,10 @@ export default function Home() {
     if (next) startSpeechRecognition();
   };
 
+  const handleQueryClick = (q) => {
+    askGPT(q);
+  };
+
   // ─────────────────────────────────────────────────────────────────────────
   // NAVIGATE
   // ─────────────────────────────────────────────────────────────────────────
@@ -749,6 +753,7 @@ export default function Home() {
         onToggleRecording={toggleRecording}
         gptAnswer={gptAnswer}
         userQuestion={userQuestion}
+        onQueryClick={handleQueryClick}
       />
 
       {/* Assistant FAB */}
@@ -759,6 +764,7 @@ export default function Home() {
       >
         ✨ Ask Assistant
       </button>
+
     </div>
   );
 }

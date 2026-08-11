@@ -34,21 +34,33 @@ export default function AnalyticsPage({ fetchedBuildings }) {
 
   const maxPeak = Math.max(...peakHours, 1);
 
-  const { dailyArrivals, monthlyAverage } = useMemo(() => {
+  const { dailyArrivals, monthlyAverage, label } = useMemo(() => {
     const selectedDt = new Date(selectedDay);
     let daily = 0;
     let monthly = 0;
     fetchedBuildings.forEach(b =>
       b.rooms.forEach(r =>
         r.logs.forEach(l => {
+          if (!l.day) return;
           const ld = new Date(l.day);
           if (ld.toDateString() === selectedDt.toDateString()) daily++;
           if (ld.getFullYear() === selectedDt.getFullYear() && ld.getMonth() === selectedDt.getMonth()) monthly++;
         })
       )
     );
-    const daysInMonth = new Date(selectedDt.getFullYear(), selectedDt.getMonth() + 1, 0).getDate();
-    return { dailyArrivals: daily, monthlyAverage: (monthly / daysInMonth).toFixed(2) };
+    const now = new Date();
+    const isCurrentMonth = selectedDt.getFullYear() === now.getFullYear() && selectedDt.getMonth() === now.getMonth();
+    let daysToDivide;
+    let calculationLabel;
+    if (isCurrentMonth) {
+      daysToDivide = now.getDate();
+      calculationLabel = 'arrivals/day (elapsed days)';
+    } else {
+      daysToDivide = new Date(selectedDt.getFullYear(), selectedDt.getMonth() + 1, 0).getDate();
+      calculationLabel = 'arrivals/day (completed month)';
+    }
+    const average = daysToDivide > 0 ? (monthly / daysToDivide).toFixed(2) : '0.00';
+    return { dailyArrivals: daily, monthlyAverage: average, label: calculationLabel };
   }, [fetchedBuildings, selectedDay]);
 
   const peakPeriod = useMemo(() => {
@@ -73,7 +85,7 @@ export default function AnalyticsPage({ fetchedBuildings }) {
         <div className="stat-card">
           <div className="stat-card-header"><span className="stat-card-label">Monthly Average</span><div className="stat-card-icon blue">📊</div></div>
           <div className="stat-card-value">{monthlyAverage}</div>
-          <div className="stat-card-sub">arrivals/day this month</div>
+          <div className="stat-card-sub">{label}</div>
         </div>
         <div className="stat-card">
           <div className="stat-card-header"><span className="stat-card-label">Peak Occupancy</span><div className="stat-card-icon orange">⏰</div></div>
@@ -129,7 +141,7 @@ export default function AnalyticsPage({ fetchedBuildings }) {
             <div style={{ background: 'var(--blue-bg)', border: '1px solid var(--blue-border)', borderRadius: 'var(--radius-md)', padding: 16 }}>
               <div style={{ fontSize: 11, color: 'var(--blue)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Monthly Average</div>
               <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--text-primary)' }}>{monthlyAverage}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>arrivals per day</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{label}</div>
             </div>
           </div>
         </div>
@@ -142,11 +154,9 @@ export default function AnalyticsPage({ fetchedBuildings }) {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {fetchedBuildings.map((b, i) => {
-                const total = b.rooms.length;
+                const total = b.rooms.filter(r => r.active !== false).length;
                 const occ = b.rooms.filter(r => {
-                  const arr = r.logs.filter(l => l.inTime).length;
-                  const dep = r.logs.filter(l => l.outTime).length;
-                  return arr > dep;
+                  return r.active !== false && r.logs && r.logs.some(l => l.inTime && !l.outTime);
                 }).length;
                 const pct = total > 0 ? Math.round((occ / total) * 100) : 0;
                 return (

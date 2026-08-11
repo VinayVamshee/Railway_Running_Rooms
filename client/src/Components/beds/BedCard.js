@@ -1,13 +1,14 @@
 import React from 'react';
 
 function isOccupied(room) {
-  const arrLogs = room.logs.filter(l => l.inTime);
-  const depLogs = room.logs.filter(l => l.outTime);
-  return arrLogs.length > depLogs.length;
+  if (!room.logs || room.logs.length === 0) return false;
+  return room.logs.some(l => l.inTime && !l.outTime);
 }
 
 function getLastLog(room) {
-  return room.logs.length > 0 ? room.logs[room.logs.length - 1] : null;
+  if (!room.logs || room.logs.length === 0) return null;
+  const activeLog = room.logs.find(l => l.inTime && !l.outTime);
+  return activeLog || room.logs[room.logs.length - 1];
 }
 
 function calculateDuration(log) {

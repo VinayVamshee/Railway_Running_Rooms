@@ -3,9 +3,10 @@ import StatCard from './StatCard';
 import { LoadingSkeletons } from '../common/EmptyState';
 
 function calculateAvailableRooms(rooms) {
-  return rooms.filter(room =>
-    room.logs.filter(l => l.inTime).length === room.logs.filter(l => l.outTime).length
-  ).length;
+  return rooms.filter(room => {
+    const isOccupied = room.logs && room.logs.some(l => l.inTime && !l.outTime);
+    return !isOccupied && room.active !== false;
+  }).length;
 }
 
 function getTodayStats(fetchedBuildings) {
@@ -53,7 +54,7 @@ function getPeakOccupancyToday(fetchedBuildings) {
 export default function Dashboard({ fetchedBuildings, loading, isLoggedIn, onNavigate }) {
   const stats = useMemo(() => {
     if (!fetchedBuildings.length) return { total: 0, occupied: 0, available: 0, pct: 0 };
-    const total = fetchedBuildings.reduce((a, b) => a + b.rooms.length, 0);
+    const total = fetchedBuildings.reduce((a, b) => a + b.rooms.filter(r => r.active !== false).length, 0);
     const available = fetchedBuildings.reduce((a, b) => a + calculateAvailableRooms(b.rooms), 0);
     const occupied = total - available;
     const pct = total > 0 ? Math.round((occupied / total) * 100) : 0;

@@ -8,7 +8,7 @@ const EXAMPLE_QUERIES = [
   'What was the peak occupancy?',
 ];
 
-export default function AssistantDrawer({ isOpen, onClose, recording, onToggleRecording, gptAnswer, userQuestion }) {
+export default function AssistantDrawer({ isOpen, onClose, recording, onToggleRecording, gptAnswer, userQuestion, onQueryClick }) {
   return (
     <Drawer
       isOpen={isOpen}
@@ -55,7 +55,9 @@ export default function AssistantDrawer({ isOpen, onClose, recording, onToggleRe
         <div className="drawer-info-label" style={{ marginBottom: 8 }}>Example Questions</div>
         <div className="assistant-example-queries">
           {EXAMPLE_QUERIES.map((q, i) => (
-            <button key={i} className="example-query">{q}</button>
+            <button key={i} className="example-query" onClick={() => onQueryClick && onQueryClick(q)}>
+              {q}
+            </button>
           ))}
         </div>
       </div>
